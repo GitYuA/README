@@ -10,5 +10,5 @@
 - 从源码构建 Docker 镜像时，建议使用带 `.git` 元数据的 Git 仓库目录，而不是纯源码压缩包，因为 `build.sh` 会读取 Git 版本信息。
 
 ---
-这是一段普通的文字，<mark>这里的文字会有背景色</mark>。
-<span style="background-color: #f0f0f0;">这是一段浅灰色背景的文字</span>
+<span style="background-color: #ffcccc;">浅红色背景文字</span>
+<span style="background-color: rgb(173, 216, 230);">浅蓝色背景文字</span>
