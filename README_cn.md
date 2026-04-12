@@ -11,3 +11,4 @@
 
 ---
 这是一段普通的文字，<mark>这里的文字会有背景色</mark>。
+<span style="background-color: #f0f0f0;">这是一段浅灰色背景的文字</span>
