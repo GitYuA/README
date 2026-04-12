@@ -12,3 +12,4 @@
 ---
 <span style="background-color: #ffcccc;">浅红色背景文字</span>
 <span style="background-color: rgb(173, 216, 230);">浅蓝色背景文字</span>
+<span style="background-color: #f6f8fa; padding: 0.2em 0.4em; border-radius: 6px; font-family: monospace; font-size: 85%; color: #24292f;">这是一段模仿行内代码效果的文字</span>
