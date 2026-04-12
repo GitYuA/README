@@ -21,7 +21,8 @@
 当前额外功能：
 
 -``189Cloud``和``189CloudPC`` 
-- 文档 ``189Cloud``和``189CloudPC``  
+- 在 ``189Cloud``和``189CloudPC``  
+- 在 189Cloud、189CloudPC 和 Local 存储驱动中，上传文件后可自动生成同名 `.cas` 文件。
 
 
 - 可通过 `Delete source` 开关在 `.cas` 生成完成后自动删除源文件。
