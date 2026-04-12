@@ -21,7 +21,7 @@
 当前额外功能：
 
 -``189Cloud``和``189CloudPC`` 
-- 文档 ``189Cloud``和``189CloudPC``  
+- 文 ``189Cloud``和``189CloudPC``  
 
 
 - 可通过 `Delete source` 开关在 `.cas` 生成完成后自动删除源文件。
