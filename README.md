@@ -86,7 +86,7 @@ graph LR
 ## 📦 支持驱动
 
 | 驱动         | 支持情况 | 推荐    | 说明       |
-| ---------- | ---- | ----- | -------- |
+| :--------: | :--: | :---: | -------- |
 | 189Cloud/189CloudPC  | ✅ | ⭐⭐⭐⭐⭐ | 完整支持     |
 | 189Cloud/189CloudPC | ✅ | ⭐⭐⭐⭐⭐ | 完整支持     |
 | Local | ⚠️ | ⭐⭐ | 仅生成 / 删除 |
@@ -96,14 +96,14 @@ graph LR
 ## ⚙️ 配置说明
 
 | 配置项                             | 默认值 | 适用驱动     | 说明             |
-| ------------------------------- | --- | -------- | -------------- |
-| Generate cas                    |  ❌   | 全部       | 上传后生成 `.cas`   |
-| Delete source                   |  ❌   | 全部       | 生成后删除原文件       |
-| Restore source from cas         |  ❌   | 189Cloud/189CloudPC | 通过 `.cas` 恢复文件 |
-| Restore source use current name |  ❌   | 189Cloud/189CloudPC | 使用当前文件名恢复      |
-| Delete CAS after restore        |  ❌   | 189Cloud/189CloudPC | 恢复后删除 `.cas`   |
-| Auto restore existing cas       |  ❌   | 189Cloud/189CloudPC | 自动监听恢复         |
-| Auto restore existing cas paths | -   | 189Cloud/189CloudPC | 指定监听目录         |
+| :-----------------------------: | :-: | :-------------------: | ------------ |
+|           Generate cas          |  ❌  |          All          | 上传后生成 `.cas` |
+|          Delete source          |  ❌  |          All          | 生成后删除原文件     |
+|     Restore source from cas     |  ❌  | 189Cloud / 189CloudPC | 通过 `.cas` 恢复 |
+| Restore source use current name |  ❌  | 189Cloud / 189CloudPC | 使用当前文件名      |
+|     Delete CAS after restore    |  ❌  | 189Cloud / 189CloudPC | 恢复后删除 `.cas` |
+|    Auto restore existing cas    |  ❌  | 189Cloud / 189CloudPC | 自动监听恢复       |
+| Auto restore existing cas paths |  -  | 189Cloud / 189CloudPC | 指定监听目录       |
 
 ---
 
@@ -128,7 +128,7 @@ movie.mp4 → movie.mp4.cas
 开启 **使用当前文件名恢复**：
 
 | 操作        | 结果             |
-| --------- | -------------- |
+| :-------: | :-----: |
 | a.mp4.cas | → a.mp4        |
 | a.cas     | → a.mp4（自动补后缀） |
 
