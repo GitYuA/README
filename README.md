@@ -1,11 +1,10 @@
-# OpenList-CAS
 
 <div align="center">
   <img style="width: 128px; height: 128px;" src="https://raw.githubusercontent.com/OpenListTeam/Logo/main/logo.svg" alt="logo" />
 
   <br/>
 
-  <p><strong>让大文件“只占 KB 空间”，却随时满血复活。</strong></p>
+  <p><strong># OpenList-CAS</strong></p>
 
   <p><em>基于 OpenList 增强，专为 <strong>.cas 秒传元数据工作流</strong> 打造的高效云盘方案。</em></p>
 
