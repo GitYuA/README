@@ -11,7 +11,6 @@
   <a href="https://github.com/OpenListTeam/OpenList/discussions"><img src="https://img.shields.io/github/discussions/OpenListTeam/OpenList?color=%23ED8936" alt="discussions" /></a>
   <a href="https://github.com/OpenListTeam/OpenList/releases"><img src="https://img.shields.io/github/downloads/OpenListTeam/OpenList/total?color=%239F7AEA&logo=github" alt="Downloads" /></a>
 </div>
-
 ---
 # OpenList-CAS
 基于 [OpenList](https://github.com/OpenListTeam/OpenList) 的增强分支，围绕 `.cas` 秒传元数据工作流进行优化，实现**低存储占用 + 快速恢复文件**的高效方案。
@@ -53,7 +52,6 @@
 ```
 ---
 ## 🔧 核心特性
-
 * 支持将普通文件转换为 `.cas` 元数据文件
 * 支持“生成后删除源文件”的轻量存储模式
 * 支持通过 `.cas` 秒传恢复文件（非上传 `.cas` 本身）
@@ -89,16 +87,13 @@ movie.mp4 → movie.mp4.cas
 （（原文件删除，保留 .cas））
 ```
 ---
-
 ## 🏷️ 命名规则
-
 开启 **“使用当前文件名恢复”** 时：
 
 | 操作          | 恢复结果              |
 | ----------- | ----------------- |
 | `a.mp4.cas` | → `a.mp4`         |
 | `a.cas`     | → `a.mp4`（自动补扩展名） |
-
 关闭该选项时：
 * 优先使用 `.cas` 内记录的原始文件名
 ---
@@ -140,7 +135,6 @@ services:
 ```
 ---
 ## 🌐 访问
-
 启动后访问：
 ```
 http://localhost:5244
@@ -167,5 +161,4 @@ http://localhost:5244
 5. 如果您不能接受本声明的任何条款，请立即停止使用本项目。
 ---
 ## 🙏 致谢
-
 感谢原项目 [OpenList](https://github.com/OpenListTeam/OpenList) 提供的基础能力。
