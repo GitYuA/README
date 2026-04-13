@@ -1,32 +1,29 @@
 <div align="center">
   <img style="width: 128px; height: 128px;" src="https://raw.githubusercontent.com/OpenListTeam/Logo/main/logo.svg" alt="logo" />
 
-  <p><strong>让大文件“只占 KB 空间”，却随时满血复活。</strong></p>
+  <p><em>OpenList 是一个有韧性、长期治理、社区驱动的 AList 分支，旨在防御基于信任的开源攻击。</em></p>
 
-  <p><em>OpenList 的增强分支，专为 <strong>.cas 秒传元数据工作流</strong> 打造。</em></p>
+  <img src="https://goreportcard.com/badge/github.com/OpenListTeam/OpenList/v3" alt="latest version" />
+  <a href="https://github.com/OpenListTeam/OpenList/blob/main/LICENSE"><img src="https://img.shields.io/github/license/OpenListTeam/OpenList" alt="License" /></a>
+  <a href="https://github.com/OpenListTeam/OpenList/actions?query=workflow%3ABuild"><img src="https://img.shields.io/github/actions/workflow/status/OpenListTeam/OpenList/build.yml?branch=main" alt="Build status" /></a>
+  <a href="https://github.com/OpenListTeam/OpenList/releases"><img src="https://img.shields.io/github/release/OpenListTeam/OpenList" alt="latest version" /></a>
 
-  <img src="https://goreportcard.com/badge/github.com/OpenListTeam/OpenList/v3" />
-  <a href="https://github.com/OpenListTeam/OpenList/blob/main/LICENSE"><img src="https://img.shields.io/github/license/OpenListTeam/OpenList" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/actions"><img src="https://img.shields.io/github/actions/workflow/status/OpenListTeam/OpenList/build.yml" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/releases"><img src="https://img.shields.io/github/release/OpenListTeam/OpenList" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/discussions"><img src="https://img.shields.io/github/discussions/OpenListTeam/OpenList?color=%23ED8936" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/releases"><img src="https://img.shields.io/github/downloads/OpenListTeam/OpenList/total?color=%239F7AEA&logo=github" /></a>
+  <a href="https://github.com/OpenListTeam/OpenList/discussions"><img src="https://img.shields.io/github/discussions/OpenListTeam/OpenList?color=%23ED8936" alt="discussions" /></a>
+  <a href="https://github.com/OpenListTeam/OpenList/releases"><img src="https://img.shields.io/github/downloads/OpenListTeam/OpenList/total?color=%239F7AEA&logo=github" alt="Downloads" /></a>
 </div>
 
 ---
-
 # OpenList-CAS
 
-基于 [OpenList](https://github.com/OpenListTeam/OpenList) 的增强分支，围绕 `.cas` 秒传元数据工作流进行优化，实现
-**“仅用 KB 存储大文件 + 秒级恢复”** 的高效云盘方案。
+基于 [OpenList](https://github.com/OpenListTeam/OpenList) 的增强分支，围绕 `.cas` 秒传元数据工作流进行优化，实现**低存储占用 + 快速恢复文件**的高效方案。
 
 ---
 
 ## ✨ TL;DR
 
-* 📦 上传一次 → 永久可恢复（无需重复上传）
-* 💾 存储占用降低 99%+（GB → KB）
-* ⚡ 秒级恢复大文件（依赖云盘秒传能力）
+* 📦 上传文件 → 自动生成 `.cas` 元数据
+* 🗑️ 可删除原文件，仅保留 `.cas` 节省空间
+* ⚡ 通过 `.cas` 可秒传恢复原文件
 
 ---
 
@@ -90,9 +87,9 @@ graph LR
 
 | 驱动         | 支持情况 | 推荐    | 说明       |
 | ---------- | ---- | ----- | -------- |
-| 189Cloud   | ✅    | ⭐⭐⭐⭐⭐ | 完整支持     |
-| 189CloudPC | ✅    | ⭐⭐⭐⭐⭐ | 完整支持     |
-| Local      | ⚠️   | ⭐⭐    | 仅生成 / 删除 |
+| 189Cloud/189CloudPC  | ✅ | ⭐⭐⭐⭐⭐ | 完整支持     |
+| 189Cloud/189CloudPC | ✅ | ⭐⭐⭐⭐⭐ | 完整支持     |
+| Local | ⚠️ | ⭐⭐ | 仅生成 / 删除 |
 
 ---
 
@@ -256,19 +253,24 @@ http://localhost:5244
 
 ## 📜 免责声明
 
-1. 本项目仅用于学习与研究
-2. 请遵守相关法律法规
-3. 禁止用于非法用途
-4. 使用风险由用户自行承担
+1. 本项目仅用于学习与技术研究，请遵守相关法律法规，请勿用于商业用途。
+2. 本项目所涉及的任何脚本、程序或资源，仅用于测试和研究目的。
+3. 使用者应在下载后的24小时内删除相关文件。
+4. 使用者需自行承担使用本项目可能产生的一切法律后果和风险，作者不承担任何责任。
+5. 如果您不能接受本声明的任何条款，请立即停止使用本项目。
 
 ---
 
-## 🙏 致谢
+## 📜 致谢 & 声明
 
-感谢 OpenList 提供基础能力
+* 感谢原项目 [OpenList](https://github.com/OpenListTeam/OpenList) 提供的基础能力。
+* 本项目为非官方增强分支
+
+⚠️ **仅供学习研究，请遵守法律法规**
 
 ---
 
 ## ⭐ Star History
 
 如果这个项目帮到了你，欢迎点个 ⭐ 支持！
+
