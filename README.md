@@ -97,13 +97,13 @@ graph LR
 
 | 配置项                             | 默认值 | 适用驱动     | 说明             |
 | ------------------------------- | --- | -------- | -------------- |
-| Generate cas                    | ❌   | 全部       | 上传后生成 `.cas`   |
-| Delete source                   | ❌   | 全部       | 生成后删除原文件       |
-| Restore source from cas         | ❌   | 189Cloud | 通过 `.cas` 恢复文件 |
-| Restore source use current name | ❌   | 189Cloud | 使用当前文件名恢复      |
-| Delete CAS after restore        | ❌   | 189Cloud | 恢复后删除 `.cas`   |
-| Auto restore existing cas       | ❌   | 189Cloud | 自动监听恢复         |
-| Auto restore existing cas paths | -   | 189Cloud | 指定监听目录         |
+| Generate cas                    |  ❌   | 全部       | 上传后生成 `.cas`   |
+| Delete source                   |  ❌   | 全部       | 生成后删除原文件       |
+| Restore source from cas         |  ❌   | 189Cloud/189CloudPC | 通过 `.cas` 恢复文件 |
+| Restore source use current name |  ❌   | 189Cloud/189CloudPC | 使用当前文件名恢复      |
+| Delete CAS after restore        |  ❌   | 189Cloud/189CloudPC | 恢复后删除 `.cas`   |
+| Auto restore existing cas       |  ❌   | 189Cloud/189CloudPC | 自动监听恢复         |
+| Auto restore existing cas paths | -   | 189Cloud/189CloudPC | 指定监听目录         |
 
 ---
 
