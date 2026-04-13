@@ -1,145 +1,77 @@
-# OpenList-CAS
+# OpenList_123
 
-基于 [OpenList](https://github.com/OpenListTeam/OpenList) `v4.2.1` 的魔改分支，围绕 `.cas` 秒传元数据工作流做了定向增强。
+> 实现 123 网盘无限制下载（可下载20G以上的大文件）
 
-这个版本的目标很直接：
+> [!NOTE]
+> 一个月只有20GB流量，能转存的尽量转存吧。(请求下载链接不消耗流量，先将所有文件的链接保存下来后，再转存，当消耗20G流量后将无法请求链接了)
 
-- 上传源文件后自动生成 `.cas`
-- 可在生成完成后自动删除源文件，节省存储空间
-- 可通过 `.cas` 中的哈希信息秒传还原源文件
-- 可在还原时强制使用当前 `.cas` 文件名
-- 可在还原成功后自动删除 `.cas`
-- 可监视指定目录中的 `.cas` 文件变化，并立即在后台尝试还原
+## 部署指南
 
-## 核心特性
+### 快速开始 (Docker)
 
-- 支持将普通文件转换为 `.cas` 秒传元数据文件
-- 支持“生成 `.cas` 后删除源文件”的轻量存储模式
-- 支持从 `.cas` 秒传恢复源文件，而不是直接上传 `.cas` 文件本身
-- 支持重命名 `.cas` 后再恢复，并尽量补回原始扩展名
-- 支持自动监视指定目录中的 `.cas` 文件并即时恢复
-- 后台相关开关和提示文案已改为中文
-
-## 支持驱动
-
-| 驱动 | 支持情况 |
-| --- | --- |
-| `189Cloud` | 支持全部 CAS 相关功能 |
-| `189CloudPC` | 支持全部 CAS 相关功能 |
-| `Local` | 支持 `生成 CAS`、`删除源文件` |
-
-## 配置项说明
-
-| 后台显示名称 | JSON 字段 | 适用驱动 | 说明 |
-| --- | --- | --- | --- |
-| 生成 CAS | `generate_cas` | `189Cloud` `189CloudPC` `Local` | 上传文件后，在同目录生成一个同名的 `.cas` 元数据文件。 |
-| 删除源文件 | `delete_source` | `189Cloud` `189CloudPC` `Local` | 成功生成 `.cas` 文件后，自动删除原始源文件。 |
-| 从 CAS 还原源文件 | `restore_source_from_cas` | `189Cloud` `189CloudPC` | 上传 `.cas` 文件时，尝试根据其中的哈希信息秒传还原源文件，而不是直接上传 `.cas` 文件本身。 |
-| 还原时使用当前文件名 | `restore_source_use_current_name` | `189Cloud` `189CloudPC` | 从 `.cas` 还原时，优先使用当前 `.cas` 文件名去掉 `.cas` 后缀后的名称；如果当前名称没有扩展名，会尽量补上原始扩展名。 |
-| 还原后删除 CAS | `delete_cas_after_restore` | `189Cloud` `189CloudPC` | 从已有 `.cas` 成功还原出源文件后，自动删除该 `.cas` 文件；如果源文件已存在，也会清理该 `.cas` 文件。 |
-| 自动还原现有 CAS | `auto_restore_existing_cas` | `189Cloud` `189CloudPC` | 自动监视已配置目录中的 `.cas` 文件，检测到新文件或文件变化时立即在后台尝试还原源文件。 |
-| 自动还原现有 CAS 路径 | `auto_restore_existing_cas_paths` | `189Cloud` `189CloudPC` | 要监视的目录路径，每行一个，路径相对于当前存储根目录；会自动包含其下所有子目录。 |
-
-## 命名规则
-
-开启 `还原时使用当前文件名` 后，恢复命名逻辑如下：
-
-- `a.mp4.cas` 还原后为 `a.mp4`
-- 将 `a.mp4.cas` 改名为 `a.cas` 后，还原时会优先使用当前名称 `a`，如果当前名称缺少扩展名，会尽量补回原始扩展名，例如恢复为 `a.mp4`
-- 如果关闭该开关，则优先使用 `.cas` 元数据中记录的原始文件名
-
-## 推荐用法
-
-### 1. 节省云盘空间
-
-适合把源文件转换成秒传元数据后只保留 `.cas`：
-
-- 开启 `生成 CAS`
-- 开启 `删除源文件`
-
-效果：
-
-- 上传原文件
-- 自动生成同名 `.cas`
-- 生成成功后自动删除原文件
-
-### 2. 分发 `.cas` 后恢复源文件
-
-适合把 `.cas` 当作轻量分发文件：
-
-- 开启 `从 CAS 还原源文件`
-- 按需开启 `还原时使用当前文件名`
-- 按需开启 `还原后删除 CAS`
-
-效果：
-
-- 上传 `.cas`
-- 系统尝试秒传恢复真实源文件
-- 如开启删除选项，恢复完成后自动清理 `.cas`
-
-### 3. 自动监视目录恢复
-
-适合已有大量 `.cas` 文件，需要后台自动处理：
-
-- 开启 `自动还原现有 CAS`
-- 在 `自动还原现有 CAS 路径` 中填写要监视的目录
-
-填写示例：
-
-```text
-movies
-anime
-sync/cas
-```
-
-说明：
-
-- 每行一个路径
-- 路径相对于当前存储根目录
-- 会自动递归包含所有子目录
-- 检测到新的 `.cas` 文件或文件变化后，会立即尝试恢复，不再依赖定时轮询扫描
-
-## 本机存储说明
-
-`Local` 驱动当前支持两个 CAS 相关开关：
-
-- `生成 CAS`
-  - 上传文件后，在同目录生成一个同名的 `.cas` 元数据文件
-- `删除源文件`
-  - 成功生成 `.cas` 文件后，自动删除原始源文件
-
-## Docker 构建
-
-在仓库根目录执行：
+**标准版**
 
 ```bash
-docker build --no-cache -t yourname/openlist-cas:v4.2.1 .
+docker run -d --restart=unless-stopped \
+  -v /etc/openlist:/opt/openlist/data \
+  -p 5244:5244 \
+  -e PUID=0 \
+  -e PGID=0 \
+  -e UMASK=022 \
+  --name="openlist" \
+  xiguanle/openlist:latest
 ```
 
-如果需要推送：
+**Lite 版 (适用于 ClawCloud 等)**
 
 ```bash
-docker push yourname/openlist-cas:v4.2.1
+docker run -d --restart=unless-stopped \
+  -v /etc/openlist:/opt/openlist/data \
+  -p 5244:5244 \
+  -e PUID=0 \
+  -e PGID=0 \
+  -e UMASK=022 \
+  --name="openlist" \
+  xiguanle/openlist:latest-lite
 ```
 
-## 构建说明
+### v4.1.0 及以后版本
 
-- 当前仓库已经内置前端打包文件 `public/dist.tar.gz`
-- 当前仓库中的 `build.sh` 已兼容无 `.git` 元数据的源码目录构建
-- 仍然建议优先在 Git 仓库中构建，方便追踪版本和后续升级
+**方式一：使用当前用户运行**
 
-## 与上游项目的关系
+如果您希望使用当前用户运行和管理 OpenList 及其配置目录：
 
-- 上游项目：[`OpenListTeam/OpenList`](https://github.com/OpenListTeam/OpenList)
-- 当前魔改基线版本：`v4.2.1`
-- 本仓库为非官方魔改分支，主要维护 `.cas` 秒传相关增强功能
+```bash
+mkdir -p /etc/openlist
+docker run --user $(id -u):$(id -g) -d --restart=unless-stopped \
+  -v /etc/openlist:/opt/openlist/data \
+  -p 5244:5244 \
+  -e UMASK=022 \
+  --name="openlist" \
+  xiguanle/openlist:latest
+```
 
-## 注意事项
+**方式二：使用默认用户 (1001)**
 
-- `.cas` 还原依赖目标驱动支持对应的秒传能力
-- 如果驱动端无法完成哈希秒传，则无法用 `.cas` 直接恢复出源文件
-- 开启 `删除源文件` 或 `还原后删除 CAS` 前，建议先在测试目录验证流程符合预期
+如果您希望使用容器内置的默认 `openlist` 用户 (UID 1001) 运行：
 
-## 致谢
+```bash
+mkdir -p /etc/openlist
+sudo chown -R 1001:1001 /etc/openlist
+docker run -d --restart=unless-stopped \
+  -v /etc/openlist:/opt/openlist/data \
+  -p 5244:5244 \
+  -e UMASK=022 \
+  --name="openlist" \
+  xiguanle/openlist:latest
+```
 
-感谢原项目 [OpenList](https://github.com/OpenListTeam/OpenList) 提供的基础能力，也感谢所有参与测试和反馈 `.cas` 工作流需求的使用者。
+*注：ClawCloud 同理使用 Lite 版本镜像。*
+
+## 免责声明
+
+1. 本项目仅供学习和交流使用，请勿用于商业用途。
+2. 本项目所涉及的任何脚本、程序或资源，仅用于测试和研究目的。
+3. 使用者应在下载后的24小时内删除相关文件。
+4. 使用者需自行承担使用本项目可能产生的一切法律后果和风险，作者不承担任何责任。
+5. 如果您不能接受本声明的任何条款，请立即停止使用本项目。
