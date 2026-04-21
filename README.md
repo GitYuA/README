@@ -1,173 +1,234 @@
-<div align="center">
-  <img style="width: 128px; height: 128px;" src="https://raw.githubusercontent.com/OpenListTeam/Logo/main/logo.svg" alt="logo" />
-
-  <p><em>OpenList 是一个有韧性、长期治理、社区驱动的 AList 分支，旨在防御基于信任的开源攻击。</em></p>
-
-  <img src="https://goreportcard.com/badge/github.com/OpenListTeam/OpenList/v3" alt="latest version" />
-  <a href="https://github.com/OpenListTeam/OpenList/blob/main/LICENSE"><img src="https://img.shields.io/github/license/OpenListTeam/OpenList" alt="License" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/actions?query=workflow%3ABuild"><img src="https://img.shields.io/github/actions/workflow/status/OpenListTeam/OpenList/build.yml?branch=main" alt="Build status" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/releases"><img src="https://img.shields.io/github/release/OpenListTeam/OpenList" alt="latest version" /></a>
-
-  <a href="https://github.com/OpenListTeam/OpenList/discussions"><img src="https://img.shields.io/github/discussions/OpenListTeam/OpenList?color=%23ED8936" alt="discussions" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/releases"><img src="https://img.shields.io/github/downloads/OpenListTeam/OpenList/total?color=%239F7AEA&logo=github" alt="Downloads" /></a>
-</div>
-
----
 # OpenList-CAS
 
-基于 [OpenList](https://github.com/OpenListTeam/OpenList) 的增强分支，围绕 `.cas` 秒传元数据工作流进行优化，实现**低存储占用 + 快速恢复文件**的高效方案。
+基于 [OpenList](https://github.com/OpenListTeam/OpenList) 的定制分支，围绕 `.cas` 元数据文件提供生成、恢复、自动恢复与预览辅助能力。
 
----
+当前这版主要针对以下驱动：
 
-## ✨ TL;DR
+- `189Cloud`
+- `189CloudPC`
+- `Local`
 
-- 📦 **上传文件** → 自动生成 `.cas` 元数据文件
-- 🗑️ **删除原文件** → 仅保留 `.cas`，显著节省存储空间
-- ⚡ **秒传恢复** → 通过 `.cas` 快速还原原始文件
+## 功能概览
 
----
+### 1. 生成 `.cas`
 
-## 📑 目录
+上传普通文件后，可自动生成对应的 `.cas` 文件。
 
-* [🧠 核心理念](#-核心理念)
-* [🔄 工作流程](#-工作流程)
-* [🚀 使用场景](#-使用场景)
-* [🔧 核心特性](#-核心特性)
-* [📦 支持驱动](#-支持驱动)
-* [⚙️ 配置说明](#️-配置说明)
-* [🏷️ 命名规则](#️-命名规则)
-* [🖥️ 存储驱动说明](#️-存储驱动说明)
-* [🐳 部署指南](#-部署指南)
-* [🌐 访问](#-访问)
-* [⚠️ 重要认知](#️-重要认知必读)
-* [⚠️ 风险提示](#️-风险提示)
-* [❓ 常见问题](#-常见问题)
-* [🔗 与上游项目](#-与上游项目)
-* [📜 免责声明](#-免责声明)
-* [📜 致谢 & 声明](#-致谢--声明)
-* [⭐ Star History](#-star-history)
+示例：
 
----
+- 原文件：`movie.mkv`
+- 生成后：`movie.mkv.cas`
 
+`.cas` 文件只保存恢复所需的元数据，不保存原始文件内容。
 
-## 🧠 核心理念
+### 2. 生成后删除源文件
 
-> 用“可验证的文件特征”替代“文件本体存储”，在不保留原始数据的情况下，仍然保留文件恢复能力。
+可在生成 `.cas` 后删除原始文件，只保留 `.cas`。
 
----
+这适合“节省存储空间”的场景，但不应把 `.cas` 当作唯一备份。
 
-## 🔄 工作流程
+### 3. 从 `.cas` 恢复源文件
 
+`189Cloud` 和 `189CloudPC` 支持通过 `.cas` 恢复源文件。
 
-> 上传 → 提取特征 → 删除原文件 → 需要时秒传恢复
+`Local` 不支持恢复，只支持生成和删除源文件。
 
-```mermaid
-graph LR
-    A[上传原文件] --> B(生成 CAS)
-    B --> C[.cas 元数据]
-    B --> D[删除原文件]
-    C --> E((节省空间))
-    C --恢复--> F[触发秒传]
-    F --> G[文件恢复]
-```
+### 4. 自动恢复已有 `.cas`
 
----
+`189Cloud` 和 `189CloudPC` 支持：
 
-## 🚀 使用场景
+- 启动后扫描监控目录
+- 周期性扫描监控目录
+- 手动刷新监控目录时触发恢复
 
-* 📉 **低存储环境（VPS / NAS）**
-  仅保存 `.cas`，极大减少空间占用
+### 5. `.cas` 预览辅助
 
-* ☁️ **网盘秒传优化**
-  利用哈希直接恢复文件，避免重复上传
+`189Cloud` 和 `189CloudPC` 支持点击 `.cas` 进行视频预览辅助：
 
-* 🎬 **媒体库归档**
-  平时只存元数据，需要时恢复原文件
-
-* 🔁 **自动化工作流**
-  监控 `.cas` 文件并自动恢复
-
----
-
-## 🔧 核心特性
-
-* 自动生成 `.cas` 元数据文件（`Generate cas`）
-* 支持生成 `.cas` 后自动删除原文件（`Delete source`）
-* 支持通过 `.cas` 秒传恢复原文件（`Restore source from cas`）
-* 支持基于当前 `.cas` 文件名恢复文件，并自动补全扩展名（`Restore source use current name`）
-* 支持自动监听 `.cas` 文件并恢复原文件，且可在恢复后自动删除 `.cas`（`Auto restore existing cas`）
-
----
-
-## ⚙️ 配置说明
-
-| 配置项                             | 默认值 | 适用驱动     | 说明             |
-| :-----------------------------: | :-: | :-------------------: |:------------:|
-|           Generate cas          |  ❌  |          All          | 上传文件后，在同目录生成同名的 .cas 文件 |
-|          Delete source          |  ❌  |          All          | 成功生成 .cas 文件后，自动删除源文件     |
-|     Restore source from cas     |  ❌  | 189Cloud / 189CloudPC | 上传 .cas 文件时，尝试根据其中的哈希信息秒传还原源文件 |
-| Restore source use current name |  ❌  | 189Cloud / 189CloudPC | 从 .cas 还原源文件时，使用当前 .cas 文件名（去除 .cas 后缀）；若无扩展名，则补充原始扩展名 |
-|     Delete CAS after restore    |  ❌  | 189Cloud / 189CloudPC | 成功还原源文件后，自动删除 .cas 文件|
-|    Auto restore existing cas    |  ❌  | 189Cloud / 189CloudPC | 自动监测已配置目录中的 .cas 文件，检测到 .cas 文件时还原源文件 |
-| Auto restore existing cas paths |  -  | 189Cloud / 189CloudPC | 要监测的目录路径，每行一个，路径相对于当前存储根目录；会自动包含其下所有子目录       |
-
----
-
-## 📦 支持驱动
-
-| 驱动                | 支持情况 | 推荐   | 说明         |
-|:-------------------:|:--------:|:------:|:------------:|
-| 189Cloud / 189CloudPC | ✔️       | ⭐⭐⭐⭐⭐ | 完整支持     |
-| Local               | ⚠️       | ⭐⭐    | 仅生成 / 删除 |
-
----
-
-
-## 🖥️ 存储驱动说明
-
-### ☁️ 189Cloud / 189CloudPC
-
-支持：
-
-* 生成 `.cas`
-* 删除原文件
-* 通过 `.cas` 秒传恢复文件
-* 自动监听并恢复 `.cas`
-* 恢复后自动清理 `.cas`
+- 点击 `.cas`
+- 先恢复预览临时文件
+- 获取真实视频直链
+- 再删除预览临时文件
 
 说明：
 
-* 依赖云盘的 **哈希秒传能力**
-* 恢复速度取决于云端是否已存在相同文件
-* 不会上传 `.cas` 内容本身，而是触发秒传机制
+- 预览临时文件统一恢复到根目录下的 `/TEMP`
+- 文件名形如 `preview__movie.mkv`
+- `189CloudPC` 可配置把预览临时文件恢复到指定家庭空间的 `/TEMP`
 
----
+## 驱动支持
 
-### 💻 Local（本地存储）
+| 驱动 | 生成 `.cas` | 删除源文件 | 从 `.cas` 恢复 | 自动恢复 | `.cas` 预览辅助 |
+| --- | --- | --- | --- | --- | --- |
+| `189Cloud` | 支持 | 支持 | 支持 | 支持 | 支持 |
+| `189CloudPC` | 支持 | 支持 | 支持 | 支持 | 支持 |
+| `Local` | 支持 | 支持 | 不支持 | 不支持 | 不支持 |
 
-**支持功能：**
+## 配置项说明
 
-- 生成 `.cas` 文件
-* 删除原文件
+### 通用 CAS 配置
+
+以下配置适用于 `189Cloud`、`189CloudPC`，其中 `Local` 只保留前两项：
+
+| 配置项 | 说明 |
+| --- | --- |
+| `Generate cas` | 上传普通文件后自动生成 `.cas` |
+| `Delete source` | 生成 `.cas` 后删除原始文件 |
+| `Restore source from cas` | 处理 `.cas` 文件时自动恢复源文件 |
+| `Restore source use current name` | 恢复时使用当前 `.cas` 文件名作为基础文件名，并保留原始扩展名 |
+| `Delete cas after restore` | 恢复成功后删除 `.cas` |
+| `Auto restore existing cas` | 自动扫描监控目录中的 `.cas` 并尝试恢复 |
+| `Auto restore existing cas paths` | 自动恢复监控目录，一行一个路径；留空表示不监控任何目录 |
+
+### `189CloudPC` 额外配置
+
+| 配置项 | 说明 |
+| --- | --- |
+| `Preview restore family id` | 留空时，预览临时文件恢复到个人空间 `/TEMP`；填写家庭 ID 时，恢复到该家庭空间 `/TEMP` |
+
+## 命名规则
+
+### 生成 `.cas`
+
+生成规则：
+
+```text
+原文件名 + .cas
+```
+
+示例：
+
+```text
+movie.mkv -> movie.mkv.cas
+```
+
+### 恢复源文件
+
+默认情况下，恢复文件名使用 `.cas` 内记录的原始文件名。
+
+开启 `Restore source use current name` 后：
+
+- 先取当前 `.cas` 文件名去掉 `.cas`
+- 再去掉这个名字本身已有的扩展名
+- 最后统一拼回原始文件扩展名
+
+示例：
+
+- `.cas` 内原始文件名：`movie.mkv`
+- 当前 `.cas` 文件名：`abc.mp4.cas`
+- 恢复结果：`abc.mkv`
+
+### 预览临时文件
+
+预览链恢复出来的临时文件名格式：
+
+```text
+preview__<恢复文件名>
+```
+
+示例：
+
+```text
+preview__movie.mkv
+```
+
+## 自动恢复机制
+
+仅 `189Cloud` 和 `189CloudPC` 支持。
+
+自动恢复生效条件：
+
+1. 开启 `Auto restore existing cas`
+2. `Auto restore existing cas paths` 填写了监控目录
+
+行为如下：
+
+- 服务启动后先扫描一次监控目录
+- 后续按存储缓存周期继续扫描
+- 手动刷新监控目录时，也会立即检查该目录中的 `.cas`
+
+说明：
+
+- 留空不监控任何目录
+- 不会默认监控根目录
+
+## 预览行为说明
+
+仅 `189Cloud` 和 `189CloudPC` 支持。
+
+点击 `.cas` 预览视频时：
+
+1. 读取 `.cas`
+2. 恢复预览临时文件到 `/TEMP`
+3. 获取恢复文件的真实视频直链
+4. 删除该预览临时文件
+
+说明：
+
+- 现在目录列表不会为了识别视频类型而提前逐个解析 `.cas`
+- 重活放在点击预览时执行，目录打开更轻
+
+## 重要说明
+
+### `.cas` 不是原文件
+
+`.cas` 只保存元数据，不保存真实文件内容。
+
+这意味着：
+
+- 能否恢复，取决于目标云盘是否还能命中对应数据
+- `.cas` 不是完整备份
+- 不建议把 `.cas` 作为唯一数据保留方式
+
+### `Local` 为什么不能恢复
+
+本地存储没有云盘那种基于文件特征直接恢复内容的能力。
+
+所以 `Local` 仅支持：
+
+- 生成 `.cas`
+- 删除源文件
 
 不支持：
 
-* 秒传恢复
+- 从 `.cas` 恢复
+- 自动恢复
+- `.cas` 预览辅助
 
-说明：
+## 推荐用法
 
-* 本地磁盘不具备“哈希秒传”能力
-* `.cas` 仅用于节省存储空间，不能用于恢复文件
+### 节省空间
 
----
+适合：
 
-## 🐳 部署指南
+- `Generate cas = 开`
+- `Delete source = 开`
 
-> 💡 默认端口：`5244`
-> 💡 数据目录：`/opt/openlist/data`
-> 💡 首次启动时，请从容器日志中获取管理员密码
+### 手动恢复
 
----
+适合：
+
+- `Restore source from cas = 开`
+
+然后手动上传或处理 `.cas` 文件。
+
+### 自动恢复
+
+适合：
+
+- `Restore source from cas = 开`
+- `Auto restore existing cas = 开`
+- `Auto restore existing cas paths = 填写具体目录`
+
+### 预览走家庭空间
+
+仅 `189CloudPC`：
+
+- 设置 `Preview restore family id`
+
+这样预览临时文件会恢复到对应家庭空间的 `/TEMP`。
+
+## 部署
 
 ### Docker
 
@@ -181,8 +242,6 @@ docker run -d --restart=unless-stopped \
   --name="openlist-cas" \
   freeyua/openlist-cas:latest
 ```
-
----
 
 ### Docker Compose
 
@@ -202,137 +261,46 @@ services:
       - UMASK=022
 ```
 
----
+默认访问地址：
 
-## 🌐 访问
-
-```
+```text
 http://localhost:5244
 ```
 
----
+## 常见问题
 
-## ⚠️ 重要认知（必读）
+### 上传 `.cas` 没有恢复
 
-###  `.cas` **仅包含文件的特征索引，不包含实际数据**：
+检查：
 
-- ✔️ **可恢复**：云盘中仍存在该文件（能命中秒传）
-- ❌ **不可恢复**：云盘中的文件被删除、失效或被风控
-- 👉 **请勿将 `.cas` 作为唯一备份方案**，否则可能导致数据永久丢失
+- 是否开启 `Restore source from cas`
+- 当前驱动是否支持恢复
 
----
+`Local` 不支持恢复。
 
-## ⚠️ 风险提示
+### 自动恢复没有生效
 
-- 强依赖云盘的秒传能力
-- 云盘策略变化可能影响恢复功能
-- 不适用于长期数据的唯一存储
+检查：
 
----
+- 是否开启 `Auto restore existing cas`
+- 是否填写了 `Auto restore existing cas paths`
 
-## ❓ 常见问题
+留空表示不监控任何目录。
 
-### ❗ 上传 `.cas` 没反应
+### 恢复后的名字不对
 
-未开启 `Restore source from cas`，或当前驱动不支持恢复功能。
+检查：
 
----
+- 是否开启 `Restore source use current name`
 
-### ❗ 无法恢复文件
+开启后，会按当前 `.cas` 文件名恢复，但始终保留原始文件扩展名。
 
-可能原因：
+### 为什么只保留 `.cas` 还有风险
 
-* 当前驱动不支持秒传（如 Local）
-* 云端不存在该文件（未命中秒传）
-* 云盘策略限制或风控导致失败
+因为 `.cas` 本身不含文件数据。
 
----
+如果目标云盘不再能命中该文件对应的数据，恢复就会失败。
 
-### ❗ 文件名或后缀不正确
+## 说明
 
-检查是否开启：
-
-`Restore source use current name`
-
-* 开启：使用当前 `.cas` 文件名恢复（自动补全扩展名）
-* 关闭：使用 `.cas` 内记录的原始文件名
-
----
-
-### ❗ `.cas` 是备份吗？
-
-不是。
-
-`.cas` 仅包含文件特征信息，不包含实际数据，仅用于触发秒传恢复。
-
-
----
-
-### ❗ 为什么 Local（本地存储）无法恢复？
-
-本地存储不具备“哈希秒传”能力。
-
-`.cas` 在 Local 中仅用于生成和删除，无法用于恢复文件。
-
----
-
-### ❗ 恢复后 `.cas` 文件没有被删除？
-
-请检查是否开启：
-
-`Delete CAS after restore`
-
----
-
-### ❗ 可以只保存 `.cas` 删除原文件吗？
-
-可以，但存在风险：
-
-* 若云端文件被删除或失效，将无法恢复
-* 不建议作为唯一备份方案
-
----
-
-### ❗ 如何实现自动恢复 `.cas` 文件？
-
-开启：
-
-`Auto restore existing cas`
-
-并配置监听目录：
-
-`Auto restore existing cas paths`
-
-
----
-
-## 🔗 与上游项目
-
-* 上游：[OpenList](https://github.com/OpenListTeam/OpenList) 
-* 本项目为非官方增强分支
-
----
-
-## 📜 免责声明
-
-1. 本项目仅用于学习与技术研究，请遵守相关法律法规，请勿用于商业用途。
-2. 本项目所涉及的任何脚本、程序或资源，仅用于测试和研究目的。
-3. 使用者应在下载后的24小时内删除相关文件。
-4. 使用者需自行承担使用本项目可能产生的一切法律后果和风险，作者不承担任何责任。
-5. 如果您不能接受本声明的任何条款，请立即停止使用本项目。
-
----
-
-## 📜 致谢 & 声明
-
-* 感谢原项目 [OpenList](https://github.com/OpenListTeam/OpenList) 提供的基础能力。
-* 本项目为非官方增强分支
-
-⚠️ **仅供学习研究，请遵守法律法规**
-
----
-
-## ⭐ Star History
-
-如果这个项目帮到了你，欢迎点个 ⭐ 支持！
-
+本项目为基于 OpenList 的非官方定制分支。
