@@ -1,7 +1,7 @@
 <div align="center">
   <img style="width: 128px; height: 128px;" src="https://raw.githubusercontent.com/OpenListTeam/Logo/main/logo.svg" alt="logo" />
 
-  <p><em>OpenList-CAS 是基于 OpenList 的非官方增强分支，围绕 <code>.cas</code> 元数据工作流提供低占用存储、快速恢复与预览播放能力。</em></p>
+  <p><em>OpenList-CAS 是基于 OpenList 的非官方增强分支，围绕 <code>.cas</code> 元数据工作流提供低占用存储、快速恢复与临时播放文件能力。</em></p>
 
   <img src="https://goreportcard.com/badge/github.com/OpenListTeam/OpenList/v3" alt="Go Report" />
   <a href="https://github.com/OpenListTeam/OpenList/blob/main/LICENSE"><img src="https://img.shields.io/github/license/OpenListTeam/OpenList" alt="License" /></a>
@@ -14,7 +14,7 @@
 
 # OpenList-CAS
 
-基于 [OpenList](https://github.com/OpenListTeam/OpenList) 的非官方增强版本，围绕 `.cas` 元数据文件提供生成、恢复、自动恢复与预览播放能力。
+基于 [OpenList](https://github.com/OpenListTeam/OpenList) 的非官方增强版本，围绕 `.cas` 元数据文件提供生成、恢复、自动恢复与临时播放文件能力。
 
 ## ✨ TL;DR
 
@@ -23,7 +23,7 @@
 - ⚡ 可通过 `.cas` 快速恢复原始文件
 - 🗑️ 可在恢复原始文件后自动删除 `.cas` 文件
 - 🎬 支持将 `.cas` 作为视频进行播放
-- ♻️ 删除源文件、`.cas` 文件和预览临时文件时同步清理回收站
+- ♻️ 删除源文件、`.cas` 文件和临时播放文件时同步清理回收站
 
 ---
 
@@ -31,15 +31,6 @@
 
 > 用“可验证的文件特征”替代“文件本体存储”，在尽量降低存储占用的同时，保留文件恢复能力。
 
-`.cas` 文件本身不包含原始文件数据，只记录恢复所需的关键元信息，例如：
-
-- 文件名
-- 文件大小
-- `md5`
-- `slice_md5`
-- `create_time`
-
----
 
 ## 🔄 工作流程
 
@@ -135,7 +126,7 @@ graph LR
 说明：
 
 - 依赖云端侧可用的恢复能力
-- 播放 `.cas` 时，会先临时恢复文件到 /TEMP，获取真实播放链接后进行自动清理
+- 播放 `.cas` 时，会先临时恢复文件到 /TEMP，获取真实播放链接后进行
 
 ### 💻 Local
 
@@ -148,7 +139,7 @@ graph LR
 
 - 从 `.cas` 恢复
 - 自动恢复
-- `.cas` 预览播放
+- `.cas` 播放临时文件
 
 说明：
 
@@ -159,28 +150,29 @@ graph LR
 
 ## 👨‍👩‍👧‍👦 关于家庭传输
 
+`FamilyTransfer` 是 `189CloudPC` 原版已有能力，不是 CAS 新增功能。
 
 开启后：
 
 - 普通上传可通过家庭空间中转，减少个人空间上传流量限制影响
 - 在 `Generate cas + Delete source` 组合下，可只在个人空间保留 `.cas`
-- 预览恢复也会跟随家庭传输逻辑走家庭侧中转
+- 临时播放文件恢复也会跟随家庭传输逻辑走家庭侧中转
 
 ---
 
-## 🎬 预览播放说明
+## 🎬 临时播放文件说明
 
 `.cas` 本身不是视频文件，不能直接播放内容本体。
 
 实际流程是：
 
 1. 点击 `.cas`
-2. 恢复预览临时文件到 `/TEMP`
+2. 恢复临时播放文件到 `/TEMP`
 3. 获取真实视频链接
 4. 开始播放
 5. 播放链拿到链接后删除临时文件，并同步清理回收站中的对应文件
 
-预览临时文件命名格式：
+临时播放文件命名格式：
 
 ```text
 TEMP_12345_movie.mkv
@@ -205,21 +197,6 @@ movie.mkv -> movie.mkv.cas
 ```text
 abc.mp4.cas -> abc.mkv
 test.cas -> test.mkv
-```
-
----
-
-## 📄 `.cas` 格式说明
-
-当前 `.cas` 内容为 Base64(JSON)。
-
-其中：
-
-- `create_time` 为 Unix 时间戳字符串
-- 示例：
-
-```json
-"create_time":"1776430151"
 ```
 
 ---
@@ -251,6 +228,8 @@ docker run -d --restart=unless-stopped \
   freeyua/openlist-cas:latest
 ```
 
+---
+
 ### Docker Compose
 
 ```yaml
@@ -279,19 +258,6 @@ http://localhost:5244
 
 ---
 
-## 🛠️ 前端构建
-
-如果你使用单独前端仓库，需要先构建前端 `dist`：
-
-```bash
-pnpm install
-pnpm build
-```
-
-然后将生成的 `dist` 或 `dist.tar.gz` 提供给后端构建流程使用。
-
----
-
 ## ⚠️ 重要说明
 
 `.cas` 只保存恢复所需特征，不保存原始文件数据。
@@ -310,12 +276,7 @@ pnpm build
 
 ### `.cas` 是备份吗？
 
-不是。`.cas` 只是元数据描述，不包含原始文件本体。
-
-### 为什么下载 `.cas` 和播放 `.cas` 表现不同？
-
-- 下载 `.cas`：下载的是 `.cas` 文件本体
-- 播放 `.cas`：会先恢复临时源文件，再获取真实视频链接
+不是，`.cas` 只是元数据描述，不包含原始文件本体。
 
 ### 为什么 Local 不支持恢复？
 
