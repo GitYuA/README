@@ -121,12 +121,6 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - APP_DATA_DIR=/data
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8086/health"]
-      interval: 30s
-      timeout: 5s
-      start_period: 10s
-      retries: 3
 ```
 
 ### 更新镜像
