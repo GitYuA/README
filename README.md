@@ -1,310 +1,317 @@
 <div align="center">
-  <img style="width: 128px; height: 128px;" src="https://raw.githubusercontent.com/OpenListTeam/Logo/main/logo.svg" alt="logo" />
 
-  <p><em>OpenList-CAS 是基于 OpenList 的非官方增强分支，围绕 <code>.cas</code> 元数据工作流提供低占用存储、快速恢复与临时播放文件能力。</em></p>
+# Emby Users Panel
 
-  <img src="https://goreportcard.com/badge/github.com/OpenListTeam/OpenList/v3" alt="Go Report" />
-  <a href="https://github.com/OpenListTeam/OpenList/blob/main/LICENSE"><img src="https://img.shields.io/github/license/OpenListTeam/OpenList" alt="License" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/actions?query=workflow%3ABuild"><img src="https://img.shields.io/github/actions/workflow/status/OpenListTeam/OpenList/build.yml?branch=main" alt="Build status" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/releases"><img src="https://img.shields.io/github/release/OpenListTeam/OpenList" alt="Release" /></a>
-  <a href="https://github.com/OpenListTeam/OpenList/discussions"><img src="https://img.shields.io/github/discussions/OpenListTeam/OpenList?color=%23ED8936" alt="Discussions" /></a>
+**轻量、全能的 Emby 用户生命周期管理面板**
+
+单二进制 · 零外部依赖 · 多服务器 · Docker 一键部署
+
+![Go](https://img.shields.io/badge/Go-1.24-00ADD8?logo=go&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-Pure_Go-003B57?logo=sqlite&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 </div>
 
 ---
 
-# OpenList-CAS
+## 目录
 
-基于 [OpenList](https://github.com/OpenListTeam/OpenList) 的非官方增强版本，围绕 `.cas` 元数据文件提供生成、恢复、自动恢复与临时播放文件能力。
-
-## ✨ TL;DR
-
-- 📦 上传普通文件后可自动生成 `.cas`
-- 🗑️ 可在生成 `.cas` 后自动删除原始源文件
-- ⚡ 可通过 `.cas` 快速恢复原始文件
-- 🗑️ 可在恢复原始文件后自动删除 `.cas` 文件
-- 🎬 支持将 `.cas` 作为视频进行播放
-- ♻️ 删除源文件、`.cas` 文件和临时播放文件时同步清理回收站
-
----
-
-## 🧠 核心理念
-
-> 用“可验证的文件特征”替代“文件本体存储”，在尽量降低存储占用的同时，保留文件恢复能力。
-
-
-## 🔄 工作流程
-
-> 上传 → 提取特征 → 生成 `.cas` → 按需删除原文件 → 需要时恢复
-
-```mermaid
-graph LR
-    A[上传原文件] --> B[生成 .cas]
-    B --> C[保留 .cas 元数据]
-    B --> D[按配置删除原文件]
-    C --> E[节省存储空间]
-    C --> F[恢复源文件]
-    F --> G[播放 / 下载 / 使用]
-```
+- [功能概览](#功能概览)
+- [技术架构](#技术架构)
+- [快速开始](#快速开始)
+- [配置指南](#配置指南)
+- [项目结构](#项目结构)
+- [API 参考](#api-参考)
+- [安全机制](#安全机制)
+- [开发指南](#开发指南)
+- [License](#license)
 
 ---
 
-## 🚀 使用场景
+## 功能概览
 
-- 📉 **低存储环境**
-  仅保留 `.cas`，显著减少空间占用
+### 仪表盘总览
+- 媒体库统计（电影、剧集、单集数量）
+- 运营数据概览（用户数、总播放次数、总播放时长）
+- 在线会话实时监控（正在播放的用户、进度、设备信息）
+- 最近入库 / 最近播放内容展示（横向封面卡片）
+- 播放趋势图（入库趋势 / 播放趋势，支持 30 天 / 12 周 / 12 月时间范围切换）
+- 影视榜（热度榜 / 观影榜模式切换，支持 30 天 / 12 周 / 12 月时间范围切换）
 
-- ☁️ **网盘秒传恢复**
-  通过哈希特征恢复文件，避免重复上传
+### 用户管理
+- 创建、编辑、充值 / 续费、启用 / 禁用、删除用户
+- 批量操作：充值、修改、启用、禁用、删除
+- 从模板用户复制权限与配置创建新用户
+- 用户分组管理与备注
+- 表格列自定义显示 / 隐藏、排序偏好记忆
 
-- 🎬 **媒体库归档**
-  平时只保留 `.cas`，需要时再恢复并播放
+### 多服务器
+- 同时管理多台 Emby 服务器，面板内一键切换
+- 每台服务器独立数据库、独立配置覆盖（定时任务、SMTP、过期策略等）
 
-- 🔁 **自动化工作流**
-  自动扫描监控目录中的 `.cas` 并恢复源文件
+### 自动化任务
+- 可配置的每日定时检测，自动禁用或删除过期用户
+- 到期前 N 天邮件提醒通知
+- 操作通知邮件（充值、启用、禁用、删除）
 
----
+### 播放统计
+- 集成 Emby Playback Reporting 插件，获取详细播放记录
+- 无插件时自动回退到 Emby Items API 采集播放数据
+- 按剧集名称智能聚合（API 回退 + SeriesName 批量查询）
 
-## 🔧 核心特性
+### 用户自助查询
+- 独立端口的用户查询页面，用户可自行查看到期时间
+- 可选 Token 验证保护
+- 独立 per-IP 和 per-username 双重限流
 
-- 自动生成 `.cas` 元数据文件
-- 支持生成 `.cas` 后自动删除原始源文件
-- 支持从 `.cas` 恢复原始文件
-- 恢复命名默认按当前 `.cas` 文件名处理
-- 支持恢复成功后自动删除 `.cas`
-- 支持自动扫描监控目录并恢复已有 `.cas`
-- 支持 `.cas` 作为视频播放
-- 支持删除时同步清理回收站
-- 支持家庭传输联动，减少个人空间上传流量限制影响
+### 数据管理
+- 一键导出 / 导入 JSON 备份（恢复上限 10MB）
+- 操作日志记录与下载
+- 配置文件自动持久化
 
----
-
-## ⚙️ 配置说明
-
-### 189CloudPC
-
-| 配置项 | 默认值 | 说明 |
-| --- | --- | --- |
-| `Generate cas` | `false` | 上传普通文件后生成对应 `.cas` |
-| `Delete source` | `false` | 生成 `.cas` 后删除原始源文件，并同步清理回收站 |
-| `Restore source from cas` | `false` | 处理 `.cas` 时自动恢复原始文件 |
-| `Delete CAS after restore` | `false` | 恢复成功后删除 `.cas`，并同步清理回收站 |
-| `Auto restore existing cas` | `false` | 自动扫描监控目录中的 `.cas` 并尝试恢复 |
-| `Auto restore existing cas paths` | 空 | 每行一个路径，只监控这些目录及其子目录；留空则不监控 |
-
-### Local
-
-| 配置项 | 默认值 | 说明 |
-| --- | --- | --- |
-| `Generate cas` | `false` | 上传普通文件后生成对应 `.cas` |
-| `Delete source` | `false` | 生成 `.cas` 后删除原始源文件 |
+### 界面体验
+- 浅色 / 深色 / 跟随系统主题切换
+- 完整的移动端响应式适配
 
 ---
 
-## 📦 支持驱动
+## 技术架构
 
-| 驱动 | 生成 `.cas` | 删除源文件 | 从 `.cas` 恢复 | 自动恢复  | 删除 `.cas`文件 | `.cas` 视频播放 |
-| --- | --- | --- | ---| --- | --- | --- |
-| `189CloudPC` | ✅ | ✅ | ✅ | ✅ | ✅ |✅ |
-| `Local` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-
----
-
-## 🖥️ 驱动说明
-
-### ☁️ 189CloudPC
-
-支持：
-
-- 生成 `.cas`
-- 生成 `.cas` 文件后删除源文件
-- 从 `.cas` 文件恢复源文件
-- 自动恢复监控目录 `.cas` 文件
-- 从 `.cas` 文件恢复源文件后删除 `.cas` 文件
-- `.cas` 视频播放
-- 删除时同步清理回收站
-
-说明：
-
-- 依赖云端侧可用的恢复能力
-- 播放 `.cas` 时，会先临时恢复文件到 /TEMP，获取真实播放链接后进行
-
-### 💻 Local
-
-支持：
-
-- 生成 `.cas`
-- 删除原始源文件
-
-不支持：
-
-- 从 `.cas` 恢复
-- 自动恢复
-- `.cas` 播放临时文件
-
-说明：
-
-- 本地存储不具备云盘式恢复能力
-- `.cas` 在 Local 中主要用于节省空间，不用于恢复
+| 层级 | 选型 | 说明 |
+|:-----|:-----|:-----|
+| **后端** | Go 1.24 | 纯标准库 `net/http`，无 Web 框架 |
+| **数据库** | SQLite | 纯 Go 驱动 ([modernc.org/sqlite](https://pkg.go.dev/modernc.org/sqlite))，无 CGO |
+| **认证** | bcrypt + Session | 密码哈希存储，CSRF Token 防护 |
+| **前端** | HTML / CSS / JS | 原生实现，零框架依赖 |
+| **部署** | Docker | 多阶段构建，Alpine 基础镜像，约 20MB |
 
 ---
 
-## 👨‍👩‍👧‍👦 关于家庭传输
+## 快速开始
 
-`FamilyTransfer` 是 `189CloudPC` 原版已有能力，不是 CAS 新增功能。
-
-开启后：
-
-- 普通上传可通过家庭空间中转，减少个人空间上传流量限制影响
-- 在 `Generate cas + Delete source` 组合下，可只在个人空间保留 `.cas`
-- 临时播放文件恢复也会跟随家庭传输逻辑走家庭侧中转
-
----
-
-## 🎬 临时播放文件说明
-
-`.cas` 本身不是视频文件，不能直接播放内容本体。
-
-实际流程是：
-
-1. 点击 `.cas`
-2. 恢复临时播放文件到 `/TEMP`
-3. 获取真实视频链接
-4. 开始播放
-5. 播放链拿到链接后删除临时文件，并同步清理回收站中的对应文件
-
-临时播放文件命名格式：
-
-```text
-TEMP_12345_movie.mkv
-```
-
----
-
-## 🏷️ 命名规则
-
-### 生成 `.cas`
-
-```text
-movie.mkv -> movie.mkv.cas
-```
-
-### 恢复源文件
-
-恢复时默认按当前 `.cas` 文件名推导目标名，并保留原始扩展名。
-
-例如：
-
-```text
-abc.mp4.cas -> abc.mkv
-test.cas -> test.mkv
-```
-
----
-
-## 🐳 部署指南
-
-默认端口：
-
-```text
-5244
-```
-
-默认数据目录：
-
-```text
-/opt/openlist/data
-```
-
-### Docker
+### 方式一：Docker Compose（推荐）
 
 ```bash
-docker run -d --restart=unless-stopped \
-  -v /etc/openlist:/opt/openlist/data \
-  -p 5244:5244 \
-  -e PUID=0 \
-  -e PGID=0 \
-  -e UMASK=022 \
-  --name="openlist-cas" \
-  freeyua/openlist-cas:latest
+git clone <repo-url> && cd emby-users-panel
+docker compose up -d
+```
+
+默认的 `docker-compose.yml` 已包含端口映射、数据卷挂载与健康检查。
+
+### 方式二：Docker 手动运行
+
+```bash
+# 构建镜像
+docker build -t emby-users-panel:latest .
+
+# 运行容器
+docker run -d \
+  --name embyuserspanel \
+  --restart always \
+  -p 8086:8086 \
+  -p 8085:8085 \
+  -v ./data:/data \
+  -e TZ=Asia/Shanghai \
+  emby-users-panel:latest
+```
+
+### 方式三：本地编译
+
+```bash
+# 需要 Go 1.24+
+go mod tidy
+go build -trimpath -o build/emby-users-panel .
+./build/emby-users-panel
+```
+
+### 访问地址
+
+启动后通过浏览器访问：
+
+| 服务 | 地址 | 说明 |
+|:-----|:-----|:-----|
+| 管理面板 | `http://<host>:8086` | 管理员操作后台 |
+| 用户查询 | `http://<host>:8085` | 用户自助查询页面 |
+| 健康检查 | `http://<host>:8086/health` | 返回 `{"status":"ok"}` |
+
+---
+
+## 配置指南
+
+### 首次设置
+
+1. 访问管理面板 `http://<host>:8086`
+2. 进入**系统设置 → 服务器管理**，添加 Emby 服务器
+3. 填写服务器地址（如 `http://192.168.1.100:8096`）和 API Key
+4. API Key 在 Emby 后台 **设置 → API 密钥** 页面生成
+
+所有设置均通过面板修改，自动持久化到 `/data/config.json`。
+
+### 环境变量
+
+| 变量 | 默认值 | 说明 |
+|:-----|:-------|:-----|
+| `APP_DATA_DIR` | `/data` | 运行时数据目录（配置、数据库、日志） |
+| `TZ` | `Asia/Shanghai` | 系统时区（影响定时任务与日期显示） |
+
+### 每服务器独立配置
+
+在面板中可为每台服务器单独覆盖以下设置，未设置的项自动继承全局配置：
+
+- 定时检查时间 / 是否启用自动任务
+- 过期处理策略（禁用 / 删除）
+- SMTP 邮件配置
+- 日志保留天数
+- 模板用户
+
+---
+
+## 项目结构
+
+```
+.
+.
+├── main.go                         # 启动入口，注入版本并调用 internal/panel
+├── internal/
+│   └── panel/                      # 后端业务代码
+│       ├── app.go                  # App 容器、初始化、路由和双端口服务
+│       ├── admin.go                # 管理端 GET/POST、认证、Action 分发
+│       ├── admin_user_actions.go   # 用户充值、创建、编辑、删除、批量操作
+│       ├── admin_dashboard_actions.go # 仪表盘数据、缓存、趋势和实时播放
+│       ├── admin_server_actions.go # 服务器保存、切换、删除
+│       ├── admin_settings_actions.go # 系统设置和邮件测试
+│       ├── admin_backup_logs_actions.go # 备份恢复、日志、手动任务
+│       ├── config.go               # 配置类型与 ConfigStore
+│       ├── db.go                   # SQLite 连接池和本地用户存储
+│       ├── emby.go                 # Emby REST API 和图片代理
+│       ├── users.go                # 用户 CRUD、本地数据与 Emby 同步
+│       ├── query.go                # 用户自助查询端路由与逻辑
+│       └── utils.go                # 通用工具函数
+├── public/
+│   └── assets/
+│       ├── css/
+│       │   ├── style.css           # 管理端样式入口
+│       │   ├── admin/              # 管理端样式模块
+│       │   └── user/               # 用户查询页样式
+│       └── js/
+│           ├── common.js           # 公共前端工具
+│           ├── admin/              # 管理端交互模块
+│           └── user/               # 用户查询页交互
+├── templates/
+│   ├── admin/                      # 管理端模板
+│   └── user/                       # 用户查询页模板
+├── build/                          # 本地构建产物
+├── data/                           # 运行时数据（自动创建）
+├── Dockerfile
+├── docker-compose.yml
+├── go.mod
+└── README.md
 ```
 
 ---
 
-### Docker Compose
+## API 参考
 
-```yaml
-services:
-  openlist-cas:
-    image: freeyua/openlist-cas:latest
-    container_name: openlist-cas
-    restart: unless-stopped
-    ports:
-      - "5244:5244"
-    volumes:
-      - ./data:/opt/openlist/data
-    environment:
-      - PUID=0
-      - PGID=0
-      - UMASK=022
+### 管理端（端口 8086）
+
+| 方法 | 路径 | 说明 |
+|:-----|:-----|:-----|
+| `GET` | `/` | 管理面板主页（未登录时显示登录页） |
+| `POST` | `/` | 登录认证 / AJAX 操作分发 |
+| `GET` | `/index.php` | 兼容路径，同 `/` |
+| `GET` | `/emby_image` | Emby 图片代理（隐藏 API Key） |
+| `GET` | `/assets/*` | 静态资源（JS / CSS） |
+| `GET` | `/health` | 健康检查 |
+
+#### AJAX Action 列表
+
+管理端所有操作通过 `POST /` 的 `action` 字段分发，需携带 `X-CSRF-Token` 请求头：
+
+| Action | 说明 |
+|:-------|:-----|
+| `login` | 管理员登录（无需已认证会话） |
+| `charge` | 单用户充值 |
+| `create` | 创建新用户 |
+| `save_edit` | 保存用户编辑 |
+| `delete` | 删除用户 |
+| `batch` | 批量操作（充值 / 修改 / 启用 / 禁用 / 删除） |
+| `refresh_cache` | 刷新用户缓存 |
+| `server_op` | 服务器管理操作（增 / 删 / 切换） |
+| `settings_op` | 保存系统设置 |
+| `test_email` | 发送测试邮件 |
+| `restore` | 导入备份 |
+| `get_users` | 获取用户列表 JSON |
+| `get_dashboard_heavy` | 获取仪表盘重数据（统计、趋势、排行榜、媒体库等） |
+| `get_dashboard_realtime` | 获取仪表盘实时数据（在线会话、播放状态等） |
+| `get_logs` | 获取操作日志 |
+| `run_auto_check` | 手动触发过期检测 |
+
+> **备份导出** 和 **日志下载** 通过 `POST /` 的 `backup` / `download_log` action 进行，需携带 `X-CSRF-Token` 请求头。
+
+### 查询端（端口 8085）
+
+| 方法 | 路径 | 说明 |
+|:-----|:-----|:-----|
+| `GET` | `/` | 用户查询页面 |
+| `GET` | `/user/user.html` | 用户查询页面 |
+| `POST` | `/query.php` | 用户查询接口 |
+| `POST` | `/user/query.php` | 同上（兼容路径） |
+| `GET` | `/health` | 健康检查 |
+
+---
+
+## 安全机制
+
+| 防护层 | 实现方式 |
+|:-------|:---------|
+| **密码存储** | bcrypt 哈希，不存储明文 |
+| **会话管理** | 内存 Session + HttpOnly / Secure / SameSite Cookie，登录成功后重新生成 Session ID |
+| **CSRF 防护** | 每 Session 随机 Token，所有写操作校验 `X-CSRF-Token` 请求头 |
+| **安全响应头** | `X-Frame-Options: DENY`、`X-Content-Type-Options: nosniff`、`Referrer-Policy`、`Permissions-Policy` 等 |
+| **API Key 保护** | 图片请求通过 `/emby_image` 后端代理，API Key 不暴露到前端；服务器操作响应中 Key 自动脱敏为 `******` |
+| **速率限制** | 内存滑动窗口 per-IP 限流 + 查询端 per-username 限流，防止暴力枚举 |
+| **登录防护** | 每 IP 速率限制 + 每 Session 失败次数窗口（5 次 / 10 分钟锁定） |
+| **Token 验证** | 用户查询页可启用独立访问令牌（SHA256 恒定时间比较） |
+| **输入校验** | 用户名长度限制（64 字符）、表单参数消毒、邮件内容 HTML 转义防注入 |
+| **备份恢复** | 上传文件限制 10MB，防止 OOM |
+| **深拷贝** | Emby Policy 等嵌套对象使用 JSON 深拷贝，避免数据污染 |
+
+---
+
+## 开发指南
+
+```bash
+# 安装依赖
+go mod tidy
+
+# 运行
+go run .
+
+# 编译
+go build -trimpath -o build/emby-users-panel .
+
+# 测试
+go test ./...
 ```
 
----
+### 构建版本注入
 
-## 🌐 访问地址
+Docker 构建时通过 `-ldflags` 自动注入版本号（日期格式）：
 
-```text
-http://localhost:5244
+```bash
+go build -ldflags="-s -w -X main.version=$(date +%Y%m%d)" -o build/emby-users-panel .
 ```
 
----
+### 依赖
 
-## ⚠️ 重要说明
-
-`.cas` 只保存恢复所需特征，不保存原始文件数据。
-
-这意味着：
-
-- ✅ 云端仍可命中恢复能力时，可以恢复
-- ❌ 云端文件失效、被清理、被风控时，可能无法恢复
-- ❌ `.cas` 不能代替完整备份
-
-请不要将 `.cas` 作为唯一长期备份方案。
+| 模块 | 用途 |
+|:-----|:-----|
+| `golang.org/x/crypto` | bcrypt 密码哈希 |
+| `modernc.org/sqlite` | 纯 Go SQLite 驱动（无 CGO） |
 
 ---
 
-## ❓ 常见问题
+## License
 
-### `.cas` 是备份吗？
-
-不是，`.cas` 只是元数据描述，不包含原始文件本体。
-
-### 为什么 Local 不支持恢复？
-
-因为本地存储不具备这套恢复链依赖的能力。
-
-### 开启家庭传输后有什么作用？
-
-可以通过家庭空间中转上传，减轻个人空间上传流量限制影响。
-
----
-
-## 🔗 与上游项目
-
-- 上游项目：[OpenList](https://github.com/OpenListTeam/OpenList)
-- 本项目为非官方增强分支
-
----
-
-## 📜 免责声明
-
-1. 本项目仅用于学习与技术研究。
-2. 请遵守相关法律法规及服务条款。
-3. 使用本项目产生的风险由使用者自行承担。
-4. 本项目为非官方修改版本，不代表上游项目立场。
-
----
-
-## 🙏 致谢
-
-- 感谢原项目 [OpenList](https://github.com/OpenListTeam/OpenList) 提供基础能力。
-- 感谢所有测试、反馈和使用这版魔改功能的用户。
+[MIT](LICENSE)
