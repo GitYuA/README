@@ -163,6 +163,22 @@ http://localhost:8086/health
 | `APP_DATA_DIR` | `/data` | 运行时数据目录，保存配置、数据库、日志和缓存 |
 | `TZ` | `Asia/Shanghai` | 时区，影响定时任务和日期显示 |
 
+### 高级配置
+
+以下配置通常无需修改，适合低内存环境或大媒体库场景按需调整：
+
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `DASHBOARD_CACHE_TTL` | `120` | 仪表盘重数据缓存秒数，设为 `0` 可关闭缓存 |
+| `DASHBOARD_CACHE_IDLE_TTL` | `1800` | 多服务器场景下，仪表盘缓存空闲清理秒数 |
+| `DASHBOARD_RECENT_PLAYED_LIMIT` | `50` | 最近播放原始记录查询数量 |
+| `DASHBOARD_ADDED_TREND_LIMIT` | `2000` | 入库趋势全量扫描最多项目数 |
+| `DASHBOARD_ADDED_TREND_PAGE_SIZE` | `200` | 入库趋势每页查询数量 |
+| `DASHBOARD_ADDED_TREND_INCREMENTAL_LIMIT` | `600` | 入库趋势增量扫描最多项目数 |
+| `EMBY_JSON_MAX_SIZE` | `16MB` | Emby JSON 响应最大读取大小 |
+| `SESSION_MAX_ENTRIES` | `1000` | 后台会话最大保留数量 |
+| `RATE_LIMIT_MAX_KEYS` | `5000` | 限流器最多保留的 IP/用户名 key 数量 |
+
 ### 数据目录
 
 运行后会在数据目录中生成以下内容：
