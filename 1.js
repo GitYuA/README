@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         天翼云盘 CAS 时间刷新器
 // @namespace    http://tampermonkey.net/
-// @version      0.3.2
+// @version      0.3.1
 // @description  扫描个人/家庭空间当前目录 .cas 文件，刷新 create_time 为当前时间并使用新版接口覆盖上传，任务完成后自动刷新页面
 // @author       liyk
 // @match        https://cloud.189.cn/*
@@ -164,7 +164,7 @@
         },
 
         applyOuterFileName(json, outerName) {
-            const name = String(outerName || '').replace(/\.cas$/i, '');
+            const name = String(outerName || '');
             if (!json || !name) return;
             const keys = ['file_name', 'filename', 'fileName', 'name'];
             const existingKey = keys.find(key => Object.prototype.hasOwnProperty.call(json, key));
@@ -877,7 +877,7 @@
             panel.className = 'cas-refresh-panel';
             panel.innerHTML = `
                 <div class="cas-refresh-header">
-                    <div class="cas-refresh-title">CAS 时间刷新器 v0.3.2</div>
+                    <div class="cas-refresh-title">CAS 时间刷新器 v0.3.1</div>
                     <button class="cas-refresh-close">×</button>
                 </div>
                 <div class="cas-refresh-body">
@@ -1009,7 +1009,7 @@
         UI.addStyles();
         UI.createFloatButton();
         GM_registerMenuCommand('打开 CAS 时间刷新器', () => UI.showPanel());
-        console.log('[CAS 时间刷新器] v0.3.2 已加载');
+        console.log('[CAS 时间刷新器] v0.3.1 已加载');
     }
 
     function installFamilyRequestHook() {
