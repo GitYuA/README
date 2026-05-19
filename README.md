@@ -76,22 +76,27 @@
 - 支持操作日志查看和下载。
 - 配置文件、用户数据、日志自动持久化到数据目录。
 
-## 快速开始
+## 部署指南
 
-### 方式一：Docker Compose
+默认端口：
 
-```bash
-docker compose up -d
+```text
+8086  管理面板
+8085  用户查询
 ```
 
-默认 `docker-compose.yml` 会映射端口、挂载 `./data` 到容器内 `/data`，并启用健康检查。
+默认数据目录：
 
-### 方式二：Docker 手动运行
+```text
+/data
+```
+
+### Docker
 
 ```bash
 docker run -d \
-  --name embyuserspanel \
-  --restart always \
+  --name emby-users-panel \
+  --restart unless-stopped \
   -p 8086:8086 \
   -p 8085:8085 \
   -v ./data:/data \
@@ -100,20 +105,56 @@ docker run -d \
   freeyua/emby-users-panel:latest
 ```
 
-如需更新到最新镜像：
+### Docker Compose
+
+```yaml
+services:
+  emby-users-panel:
+    image: freeyua/emby-users-panel:latest
+    container_name: emby-users-panel
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+      - "8085:8085"
+    volumes:
+      - ./data:/data
+    environment:
+      - TZ=Asia/Shanghai
+      - APP_DATA_DIR=/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8086/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+```
+
+### 更新镜像
 
 ```bash
 docker pull freeyua/emby-users-panel:latest
-docker restart embyuserspanel
+docker restart emby-users-panel
 ```
 
-### 访问地址
+## 访问地址
 
-| 服务 | 地址 | 说明 |
-|:-----|:-----|:-----|
-| 管理面板 | `http://<host>:8086` | 管理员后台 |
-| 用户查询 | `http://<host>:8085` | 用户自助查询页 |
-| 健康检查 | `http://<host>:8086/health` | 返回 `status` 和 `version` |
+管理面板：
+
+```text
+http://localhost:8086
+```
+
+用户查询：
+
+```text
+http://localhost:8085
+```
+
+健康检查：
+
+```text
+http://localhost:8086/health
+```
 
 ## 首次配置
 
