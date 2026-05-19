@@ -84,13 +84,11 @@
 docker compose up -d
 ```
 
-默认 `docker-compose.yml` 会构建镜像、映射端口、挂载 `./data` 到容器内 `/data`，并启用健康检查。
+默认 `docker-compose.yml` 会映射端口、挂载 `./data` 到容器内 `/data`，并启用健康检查。
 
 ### 方式二：Docker 手动运行
 
 ```bash
-docker build -t emby-users-panel:latest .
-
 docker run -d \
   --name embyuserspanel \
   --restart always \
@@ -99,26 +97,14 @@ docker run -d \
   -v ./data:/data \
   -e TZ=Asia/Shanghai \
   -e APP_DATA_DIR=/data \
-  emby-users-panel:latest
+  freeyua/emby-users-panel:latest
 ```
 
-### 方式三：本地运行
+如需更新到最新镜像：
 
 ```bash
-go mod tidy
-go run .
-```
-
-构建本地二进制：
-
-```bash
-go build -trimpath -o build/emby-users-panel .
-```
-
-Windows 下可以改成：
-
-```powershell
-go build -trimpath -o build/emby-users-panel.exe .
+docker pull freeyua/emby-users-panel:latest
+docker restart embyuserspanel
 ```
 
 ### 访问地址
@@ -281,16 +267,22 @@ go mod tidy
 go run .
 ```
 
+构建本地二进制：
+
+```bash
+go build -trimpath -o build/emby-users-panel .
+```
+
+Windows 下可以改成：
+
+```powershell
+go build -trimpath -o build/emby-users-panel.exe .
+```
+
 测试：
 
 ```bash
 go test ./...
-```
-
-构建：
-
-```bash
-go build -trimpath -o build/emby-users-panel .
 ```
 
 Docker 构建时会通过 `-ldflags` 注入版本号：
