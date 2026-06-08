@@ -1,9 +1,9 @@
-## Star 历史
+## Star History
 
-<a href="https://star-history.com/#gityua/openlist-cas&Date">
+<a href="https://www.star-history.com/?type=date&repos=gityua%2Fopenlist-cas">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=acepanel/panel&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=acepanel/panel&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=acepanel/panel&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=gityua/openlist-cas&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=gityua/openlist-cas&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=gityua/openlist-cas&type=date&legend=top-left" />
  </picture>
 </a>
